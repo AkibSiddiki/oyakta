@@ -18,14 +18,15 @@ class _SplashScreenState extends State<SplashScreen>
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 2), () {
       initProvider();
-      Navigator.pushReplacementNamed(context, '/home');
     });
   }
 
   void initProvider() async {
     final oyaktaProviders =
         Provider.of<OyaktaProviders>(context, listen: false);
-    await oyaktaProviders.getOyakta();
+    await oyaktaProviders.initOyakta();
+    // ignore: use_build_context_synchronously
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
@@ -38,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color.fromARGB(255, 2, 16, 30),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

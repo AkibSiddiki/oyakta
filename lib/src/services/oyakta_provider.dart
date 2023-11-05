@@ -1,29 +1,53 @@
-import 'package:adhan/adhan.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:oyakta/src/services/coordinate_to_address.dart';
 import 'package:oyakta/src/services/get_oyakta.dart';
+import 'package:prayers_times/prayers_times.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OyaktaProviders extends ChangeNotifier {
-  late Position currentPosition;
-  late Placemark currentPlacemark;
-  late PrayerTimes prayerTimesOfCurrentLocation;
+  late Position selectedPosition;
+  late double latitude;
+  late double longitude;
+  late Placemark selectedPlacemark;
+  late PrayerTimes prayerTimesOfSelectedLocation;
+  late List<DateTime> prayerTimes;
+  late DateTime today = DateTime.now();
   bool reqComplete = false;
 
-  Future<void> getOyakta() async {
-    reqComplete = false;
+  Future<void> initOyakta() async {
+    final prefs = await SharedPreferences.getInstance();
+    final double? selectedPositionLat = prefs.getDouble('selectedPositionLat');
+    final double? selectedPositionLong =
+        prefs.getDouble('selectedPositionLong');
+    if (selectedPositionLat == null || selectedPositionLong == null) {
+      await getCurrentLocation();
+      await getOyakta();
+    } else {
+      latitude = selectedPositionLat;
+      longitude = selectedPositionLong;
+      notifyListeners();
+      await getOyakta();
+    }
+  }
+
+  void nextDate() {
+    today = today.add(const Duration(days: 1));
     notifyListeners();
+    getOyakta();
+  }
+
+  void prevDate() {
+    today = today.subtract(const Duration(days: 1));
+    notifyListeners();
+    getOyakta();
+  }
+
+  Future<void> getCurrentLocation() async {
     try {
       bool serviceEnabled;
       LocationPermission permission;
-
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
-      if (!serviceEnabled) {
-        Geolocator.openLocationSettings();
-        throw Exception('Location services are disabled.');
-      }
 
       permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
@@ -38,19 +62,37 @@ class OyaktaProviders extends ChangeNotifier {
             'Location permissions are permanently denied, we cannot request permissions.');
       }
 
-      currentPosition = await Geolocator.getCurrentPosition(
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+      if (!serviceEnabled) {
+        Geolocator.openLocationSettings();
+        throw Exception('Location services are disabled.');
+      }
+
+      selectedPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.low);
-
-      currentPlacemark = await getAddress(currentPosition);
-      prayerTimesOfCurrentLocation = getAdhan(currentPosition);
-
-      reqComplete = true;
       notifyListeners();
-    } catch (e) {
-      // print('Error in getOyakta: $e');
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setDouble('selectedPositionLat', selectedPosition.latitude);
+      await prefs.setDouble('selectedPositionLong', selectedPosition.longitude);
 
-      reqComplete = false;
+      latitude = selectedPosition.latitude;
+      longitude = selectedPosition.longitude;
       notifyListeners();
-    }
+      await getOyakta();
+      // ignore: empty_catches
+    } catch (e) {}
+  }
+
+  Future<void> getOyakta() async {
+    reqComplete = false;
+    notifyListeners();
+
+    selectedPlacemark = await getAddress(latitude, longitude);
+    notifyListeners();
+    prayerTimesOfSelectedLocation = await getAdhan(latitude, longitude, today);
+
+    reqComplete = true;
+    notifyListeners();
   }
 }
