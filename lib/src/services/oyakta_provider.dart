@@ -44,6 +44,14 @@ class OyaktaProviders extends ChangeNotifier {
     getOyakta();
   }
 
+  void resetDate() {
+    if (today != DateTime.now()) {
+      today = DateTime.now();
+      notifyListeners();
+      getOyakta();
+    }
+  }
+
   Future<void> getCurrentLocation() async {
     try {
       bool serviceEnabled;

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:oyakta/src/services/oyakta_provider.dart';
 import 'package:oyakta/src/widgets/prayer_card.dart';
 import 'package:provider/provider.dart';
+import 'package:hijri/hijri_calendar.dart';
 import 'package:gap/gap.dart';
 import 'dart:async';
 
@@ -24,20 +25,34 @@ class _HomeState extends State<Home> {
     return Consumer<OyaktaProviders>(
         builder: ((context, oyaktaProviders, chile) => SafeArea(
               child: Scaffold(
-                  backgroundColor: const Color.fromARGB(255, 2, 16, 30),
+                  backgroundColor: const Color.fromARGB(255, 1, 17, 33),
                   appBar: PreferredSize(
                     preferredSize: const Size.fromHeight(56.0),
                     child: AppBar(
                       backgroundColor: Colors.transparent,
                       centerTitle: true,
-                      title: Text(
-                        DateTime.now().day == oyaktaProviders.today.day
-                            ? 'Today'
-                            : DateFormat('dd MMM')
-                                .format(oyaktaProviders.today),
-                        style: const TextStyle(
-                            color: Color.fromARGB(255, 250, 250, 250),
-                            fontSize: 18),
+                      title: GestureDetector(
+                        onTap: () => oyaktaProviders.resetDate(),
+                        child: SizedBox(
+                          child: Column(
+                            children: [
+                              Text(
+                                DateFormat('dd MMM')
+                                    .format(oyaktaProviders.today),
+                                style: const TextStyle(
+                                    color: Color.fromARGB(255, 250, 250, 250),
+                                    fontSize: 14),
+                              ),
+                              Text(
+                                DateFormat('EEEE')
+                                    .format(oyaktaProviders.today),
+                                style: const TextStyle(
+                                    color: Color.fromARGB(255, 250, 250, 250),
+                                    fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                       leading: IconButton(
                         icon: const Icon(
@@ -71,14 +86,14 @@ class _HomeState extends State<Home> {
                           //location Card start
                           Container(
                             width: double.infinity,
-                            height: 125,
+                            // height: 135,
                             decoration: const BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(12)),
                               color: Color.fromARGB(255, 1, 26, 52),
                               image: DecorationImage(
                                   image: AssetImage('assets/card_bg_big2.png'),
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.fill,
                                   opacity: 0.9),
                             ),
                             child: Padding(
@@ -92,6 +107,13 @@ class _HomeState extends State<Home> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      Text(
+                                        HijriCalendar.fromDate(
+                                                oyaktaProviders.today)
+                                            .toFormat("dd MMMM"),
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                      ),
                                       StreamBuilder<DateTime>(
                                         stream: clockStream,
                                         builder: (context, snapshot) {
@@ -107,7 +129,7 @@ class _HomeState extends State<Home> {
                                               style: const TextStyle(
                                                 color: Color.fromARGB(
                                                     255, 250, 250, 250),
-                                                fontSize: 32,
+                                                fontSize: 38,
                                                 fontWeight: FontWeight.w300,
                                               ),
                                             );
@@ -117,7 +139,7 @@ class _HomeState extends State<Home> {
                                               style: TextStyle(
                                                 color: Color.fromARGB(
                                                     255, 250, 250, 250),
-                                                fontSize: 32,
+                                                fontSize: 38,
                                                 fontWeight: FontWeight.w300,
                                               ),
                                             );
@@ -132,28 +154,31 @@ class _HomeState extends State<Home> {
                                             color: Color.fromARGB(
                                                 255, 250, 250, 250),
                                           ),
-                                          const Gap(12),
+                                          const Gap(4),
                                           Text(
-                                            ' Sunrise ${DateFormat.jm().format(oyaktaProviders.prayerTimesOfSelectedLocation.sunrise!)}',
+                                            DateFormat.jm().format(oyaktaProviders
+                                                .prayerTimesOfSelectedLocation
+                                                .sunrise!),
                                             style: const TextStyle(
                                                 color: Color.fromARGB(
                                                     255, 250, 250, 250),
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w300),
                                           ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
+                                          const Gap(12),
                                           const Icon(
                                             Icons.wb_twilight_sharp,
                                             size: 16,
                                             color: Color.fromARGB(
                                                 255, 250, 250, 250),
                                           ),
-                                          const Gap(12),
+                                          const Gap(4),
                                           Text(
-                                            ' Sunset ${DateFormat.jm().format(oyaktaProviders.prayerTimesOfSelectedLocation.maghribStartTime!.subtract(const Duration(minutes: 1)))}',
+                                            DateFormat.jm().format(oyaktaProviders
+                                                .prayerTimesOfSelectedLocation
+                                                .maghribStartTime!
+                                                .subtract(const Duration(
+                                                    minutes: 1))),
                                             style: const TextStyle(
                                                 color: Color.fromARGB(
                                                     255, 250, 250, 250),
@@ -167,17 +192,15 @@ class _HomeState extends State<Home> {
                                   GestureDetector(
                                     onTap: () =>
                                         oyaktaProviders.getCurrentLocation(),
-                                    child: Row(
+                                    child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                          CrossAxisAlignment.end,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                        // const Gap(7),
+                                        Row(
                                           children: [
-                                            const Gap(7),
                                             Text(
                                               '${oyaktaProviders.selectedPlacemark.locality}',
                                               style: const TextStyle(
@@ -186,25 +209,22 @@ class _HomeState extends State<Home> {
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w300),
                                             ),
-                                            const Text(
-                                              'Tap to update location',
-                                              style: TextStyle(
-                                                  color: Color.fromARGB(
-                                                      255, 200, 200, 200),
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w300),
-                                            ),
+                                            const Gap(3),
+                                            const Icon(
+                                              Icons.pin_drop,
+                                              color: Colors.orange,
+                                              size: 13,
+                                            )
                                           ],
                                         ),
-                                        const Gap(3),
-                                        const Padding(
-                                          padding: EdgeInsets.only(top: 12),
-                                          child: Icon(
-                                            Icons.pin_drop,
-                                            color: Colors.orange,
-                                            size: 14,
-                                          ),
-                                        )
+                                        const Text(
+                                          'Tap to update location',
+                                          style: TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 200, 200, 200),
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w300),
+                                        ),
                                       ],
                                     ),
                                   )
@@ -220,35 +240,45 @@ class _HomeState extends State<Home> {
                                   .prayerTimesOfSelectedLocation.fajrStartTime!,
                               oyaktaProviders
                                   .prayerTimesOfSelectedLocation.fajrEndTime!,
-                              'Fajar'),
+                              'Fajar',
+                              oyaktaProviders.prayerTimesOfSelectedLocation
+                                  .currentPrayer()),
                           const Gap(12),
                           prayerCard(
                               oyaktaProviders.prayerTimesOfSelectedLocation
                                   .dhuhrStartTime!,
                               oyaktaProviders
                                   .prayerTimesOfSelectedLocation.dhuhrEndTime!,
-                              'Dhuhr'),
+                              'Dhuhr',
+                              oyaktaProviders.prayerTimesOfSelectedLocation
+                                  .currentPrayer()),
                           const Gap(12),
                           prayerCard(
                               oyaktaProviders
                                   .prayerTimesOfSelectedLocation.asrStartTime!,
                               oyaktaProviders
                                   .prayerTimesOfSelectedLocation.asrEndTime!,
-                              'Asr'),
+                              'Asr',
+                              oyaktaProviders.prayerTimesOfSelectedLocation
+                                  .currentPrayer()),
                           const Gap(12),
                           prayerCard(
                               oyaktaProviders.prayerTimesOfSelectedLocation
                                   .maghribStartTime!,
                               oyaktaProviders.prayerTimesOfSelectedLocation
                                   .maghribEndTime!,
-                              'Maghrib'),
+                              'Maghrib',
+                              oyaktaProviders.prayerTimesOfSelectedLocation
+                                  .currentPrayer()),
                           const Gap(12),
                           prayerCard(
                               oyaktaProviders
                                   .prayerTimesOfSelectedLocation.ishaStartTime!,
                               oyaktaProviders
                                   .prayerTimesOfSelectedLocation.ishaEndTime!,
-                              'Isha'),
+                              'Isha',
+                              oyaktaProviders.prayerTimesOfSelectedLocation
+                                  .currentPrayer()),
                         ],
                       ),
                     ),

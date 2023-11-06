@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
-Widget prayerCard(DateTime s, DateTime e, String prayerName) {
+Widget prayerCard(
+    DateTime s, DateTime e, String prayerName, String currentPrayer) {
   return Container(
     width: double.infinity,
     padding: const EdgeInsets.all(10),
@@ -17,12 +19,26 @@ Widget prayerCard(DateTime s, DateTime e, String prayerName) {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              prayerName,
-              style: const TextStyle(
-                  color: Color.fromARGB(255, 250, 250, 250),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w300),
+            Row(
+              children: [
+                Text(
+                  prayerName,
+                  style: const TextStyle(
+                      color: Color.fromARGB(255, 250, 250, 250),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w300),
+                ),
+                const Gap(4),
+                if (prayerName.toLowerCase() == currentPrayer &&
+                    (s.day == DateTime.now().day &&
+                        s.month == DateTime.now().month &&
+                        s.year == DateTime.now().year))
+                  const Icon(
+                    Icons.lens,
+                    color: Color.fromARGB(255, 22, 165, 72),
+                    size: 9,
+                  )
+              ],
             ),
             const Text(
               'Start Time',
