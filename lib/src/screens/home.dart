@@ -202,7 +202,8 @@ class _HomeState extends State<Home> {
                                         Row(
                                           children: [
                                             Text(
-                                              '${oyaktaProviders.selectedPlacemark.locality}',
+                                              oyaktaProviders.selectedPlacemark
+                                                  .locality as String,
                                               style: const TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 250, 250, 250),
@@ -235,49 +236,54 @@ class _HomeState extends State<Home> {
                           //location Card end
 
                           const Gap(12),
-                          prayerCard(
-                              oyaktaProviders
+                          PrayerCard(
+                              s: oyaktaProviders
                                   .prayerTimesOfSelectedLocation.fajrStartTime!,
-                              oyaktaProviders
+                              e: oyaktaProviders
                                   .prayerTimesOfSelectedLocation.fajrEndTime!,
-                              'Fajar',
-                              oyaktaProviders.prayerTimesOfSelectedLocation
+                              prayerName: 'Fajr',
+                              currentPrayer: oyaktaProviders
+                                  .prayerTimesOfSelectedLocation
                                   .currentPrayer()),
                           const Gap(12),
-                          prayerCard(
-                              oyaktaProviders.prayerTimesOfSelectedLocation
+                          PrayerCard(
+                              s: oyaktaProviders.prayerTimesOfSelectedLocation
                                   .dhuhrStartTime!,
-                              oyaktaProviders
+                              e: oyaktaProviders
                                   .prayerTimesOfSelectedLocation.dhuhrEndTime!,
-                              'Dhuhr',
-                              oyaktaProviders.prayerTimesOfSelectedLocation
+                              prayerName: 'Dhuhr',
+                              currentPrayer: oyaktaProviders
+                                  .prayerTimesOfSelectedLocation
                                   .currentPrayer()),
                           const Gap(12),
-                          prayerCard(
-                              oyaktaProviders
+                          PrayerCard(
+                              s: oyaktaProviders
                                   .prayerTimesOfSelectedLocation.asrStartTime!,
-                              oyaktaProviders
+                              e: oyaktaProviders
                                   .prayerTimesOfSelectedLocation.asrEndTime!,
-                              'Asr',
-                              oyaktaProviders.prayerTimesOfSelectedLocation
+                              prayerName: 'Asr',
+                              currentPrayer: oyaktaProviders
+                                  .prayerTimesOfSelectedLocation
                                   .currentPrayer()),
                           const Gap(12),
-                          prayerCard(
-                              oyaktaProviders.prayerTimesOfSelectedLocation
+                          PrayerCard(
+                              s: oyaktaProviders.prayerTimesOfSelectedLocation
                                   .maghribStartTime!,
-                              oyaktaProviders.prayerTimesOfSelectedLocation
+                              e: oyaktaProviders.prayerTimesOfSelectedLocation
                                   .maghribEndTime!,
-                              'Maghrib',
-                              oyaktaProviders.prayerTimesOfSelectedLocation
+                              prayerName: 'Maghrib',
+                              currentPrayer: oyaktaProviders
+                                  .prayerTimesOfSelectedLocation
                                   .currentPrayer()),
                           const Gap(12),
-                          prayerCard(
-                              oyaktaProviders
+                          PrayerCard(
+                              s: oyaktaProviders
                                   .prayerTimesOfSelectedLocation.ishaStartTime!,
-                              oyaktaProviders
+                              e: oyaktaProviders
                                   .prayerTimesOfSelectedLocation.ishaEndTime!,
-                              'Isha',
-                              oyaktaProviders.prayerTimesOfSelectedLocation
+                              prayerName: 'Isha',
+                              currentPrayer: oyaktaProviders
+                                  .prayerTimesOfSelectedLocation
                                   .currentPrayer()),
                         ],
                       ),

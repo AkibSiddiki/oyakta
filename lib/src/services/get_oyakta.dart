@@ -1,4 +1,3 @@
-// ignore_for_file: avoid_print
 import 'package:prayers_times/prayers_times.dart';
 
 Future<PrayerTimes> getAdhan(double lat, double long, DateTime today) async {
@@ -13,27 +12,27 @@ Future<PrayerTimes> getAdhan(double lat, double long, DateTime today) async {
       locationName: convertTimeZoneOffsetToName(DateTime.now().timeZoneName),
       dateTime: today);
 
-  print(
-      "---Today's Prayer Times in Your Local Timezone(${prayerTimes.locationName})---");
-  print('Fajr Start Time:\t${prayerTimes.fajrStartTime!}');
-  print('Fajr End Time:\t${prayerTimes.fajrEndTime!}');
-  print('Sunrise Time:\t${prayerTimes.sunrise!}');
-  print('Dhuhr Start Time:\t${prayerTimes.dhuhrStartTime!}');
-  print('Dhuhr End Time:\t${prayerTimes.dhuhrEndTime!}');
-  print('Asr Start Time:\t${prayerTimes.asrStartTime!}');
-  print('Asr End Time:\t${prayerTimes.asrEndTime!}');
-  print('Maghrib Start Time:\t${prayerTimes.maghribStartTime!}');
-  print('Maghrib End Time:\t${prayerTimes.maghribEndTime!}');
-  print('Isha Start Time:\t${prayerTimes.ishaStartTime!}');
-  print('Isha End Time:\t${prayerTimes.ishaEndTime!}');
+  // print(
+  //     "---Today's Prayer Times in Your Local Timezone(${prayerTimes.locationName})---");
+  // print('Fajr Start Time:\t${prayerTimes.fajrStartTime!}');
+  // print('Fajr End Time:\t${prayerTimes.fajrEndTime!}');
+  // print('Sunrise Time:\t${prayerTimes.sunrise!}');
+  // print('Dhuhr Start Time:\t${prayerTimes.dhuhrStartTime!}');
+  // print('Dhuhr End Time:\t${prayerTimes.dhuhrEndTime!}');
+  // print('Asr Start Time:\t${prayerTimes.asrStartTime!}');
+  // print('Asr End Time:\t${prayerTimes.asrEndTime!}');
+  // print('Maghrib Start Time:\t${prayerTimes.maghribStartTime!}');
+  // print('Maghrib End Time:\t${prayerTimes.maghribEndTime!}');
+  // print('Isha Start Time:\t${prayerTimes.ishaStartTime!}');
+  // print('Isha End Time:\t${prayerTimes.ishaEndTime!}');
 
-  String current = prayerTimes.currentPrayer();
-  String next = prayerTimes.nextPrayer();
-  print('\n***** Convenience Utilities');
-  print('Current Prayer:\t$current\t${prayerTimes.timeForPrayer(current)}');
-  print('Next Prayer:\t$next\t${prayerTimes.timeForPrayer(next)}');
+  // String current = prayerTimes.currentPrayer();
+  // String next = prayerTimes.nextPrayer();
+  // print('\n***** Convenience Utilities');
+  // print('Current Prayer:\t$current\t${prayerTimes.timeForPrayer(current)}');
+  // print('Next Prayer:\t$next\t${prayerTimes.timeForPrayer(next)}');
 
-  print('---');
+  // print('---');
 
   return prayerTimes;
 }

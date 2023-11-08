@@ -16,7 +16,16 @@ class OyaktaProviders extends ChangeNotifier {
   late DateTime today = DateTime.now();
   bool reqComplete = false;
 
+  Map<String, bool> alerts = {
+    'fajr': false,
+    'dhuhr': false,
+    'asr': false,
+    'maghrib': false,
+    'isha': false,
+  };
+
   Future<void> initOyakta() async {
+    await initAlert();
     final prefs = await SharedPreferences.getInstance();
     final double? selectedPositionLat = prefs.getDouble('selectedPositionLat');
     final double? selectedPositionLong =
@@ -61,11 +70,15 @@ class OyaktaProviders extends ChangeNotifier {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
+          reqComplete = true;
+          notifyListeners();
           throw Exception('Location permissions are denied');
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
+        reqComplete = true;
+        notifyListeners();
         throw Exception(
             'Location permissions are permanently denied, we cannot request permissions.');
       }
@@ -73,13 +86,16 @@ class OyaktaProviders extends ChangeNotifier {
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
       if (!serviceEnabled) {
-        Geolocator.openLocationSettings();
+        reqComplete = true;
+        notifyListeners();
+        // Geolocator.openLocationSettings();
         throw Exception('Location services are disabled.');
       }
 
       selectedPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.low);
       notifyListeners();
+      // print(selectedPosition);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setDouble('selectedPositionLat', selectedPosition.latitude);
       await prefs.setDouble('selectedPositionLong', selectedPosition.longitude);
@@ -87,9 +103,13 @@ class OyaktaProviders extends ChangeNotifier {
       latitude = selectedPosition.latitude;
       longitude = selectedPosition.longitude;
       notifyListeners();
-      await getOyakta();
+      Future.delayed(const Duration(seconds: 3), () async {
+        await getOyakta();
+      });
       // ignore: empty_catches
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> getOyakta() async {
@@ -101,6 +121,29 @@ class OyaktaProviders extends ChangeNotifier {
     prayerTimesOfSelectedLocation = await getAdhan(latitude, longitude, today);
 
     reqComplete = true;
+    notifyListeners();
+  }
+
+  Future<void> toggleAlert(String prayerName) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (alerts[prayerName] == false) {
+      alerts[prayerName] = true;
+      notifyListeners();
+      await prefs.setBool(prayerName, alerts[prayerName]!);
+    } else {
+      alerts[prayerName] = false;
+      notifyListeners();
+      await prefs.setBool(prayerName, alerts[prayerName]!);
+    }
+  }
+
+  Future<void> initAlert() async {
+    final prefs = await SharedPreferences.getInstance();
+    alerts['fajr'] = (prefs.getBool('fajr')) ?? false;
+    alerts['dhuhr'] = (prefs.getBool('dhuhr')) ?? false;
+    alerts['asr'] = (prefs.getBool('asr')) ?? false;
+    alerts['maghrib'] = (prefs.getBool('maghrib')) ?? false;
+    alerts['isha'] = (prefs.getBool('isha')) ?? false;
     notifyListeners();
   }
 }
