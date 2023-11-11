@@ -202,8 +202,7 @@ class _HomeState extends State<Home> {
                                         Row(
                                           children: [
                                             Text(
-                                              oyaktaProviders.selectedPlacemark
-                                                  .locality as String,
+                                              oyaktaProviders.locality,
                                               style: const TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 250, 250, 250),

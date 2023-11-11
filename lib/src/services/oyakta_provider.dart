@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:oyakta/src/services/background_task.dart';
 import 'package:oyakta/src/services/coordinate_to_address.dart';
 import 'package:oyakta/src/services/get_oyakta.dart';
 import 'package:prayers_times/prayers_times.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 class OyaktaProviders extends ChangeNotifier {
   late Position selectedPosition;
   late double latitude;
   late double longitude;
   late Placemark selectedPlacemark;
+  late String locality;
   late PrayerTimes prayerTimesOfSelectedLocation;
   late List<DateTime> prayerTimes;
   late DateTime today = DateTime.now();
@@ -27,15 +30,19 @@ class OyaktaProviders extends ChangeNotifier {
   Future<void> initOyakta() async {
     await initAlert();
     final prefs = await SharedPreferences.getInstance();
+    final String? selectLocality = prefs.getString('locality');
     final double? selectedPositionLat = prefs.getDouble('selectedPositionLat');
     final double? selectedPositionLong =
         prefs.getDouble('selectedPositionLong');
-    if (selectedPositionLat == null || selectedPositionLong == null) {
+    if (selectedPositionLat == null ||
+        selectedPositionLong == null ||
+        selectLocality == null) {
       await getCurrentLocation();
       await getOyakta();
     } else {
       latitude = selectedPositionLat;
       longitude = selectedPositionLong;
+      locality = selectLocality;
       notifyListeners();
       await getOyakta();
     }
@@ -103,20 +110,22 @@ class OyaktaProviders extends ChangeNotifier {
       latitude = selectedPosition.latitude;
       longitude = selectedPosition.longitude;
       notifyListeners();
-      Future.delayed(const Duration(seconds: 3), () async {
+
+      selectedPlacemark = await getAddress(latitude, longitude);
+      locality = selectedPlacemark.locality!;
+      await prefs.setString('locality', selectedPlacemark.locality as String);
+      notifyListeners();
+
+      Future.delayed(const Duration(seconds: 2), () async {
         await getOyakta();
       });
-      // ignore: empty_catches
     } catch (e) {
-      print(e);
+      throw Exception(e);
     }
   }
 
   Future<void> getOyakta() async {
     reqComplete = false;
-    notifyListeners();
-
-    selectedPlacemark = await getAddress(latitude, longitude);
     notifyListeners();
     prayerTimesOfSelectedLocation = await getAdhan(latitude, longitude, today);
 
@@ -128,12 +137,14 @@ class OyaktaProviders extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     if (alerts[prayerName] == false) {
       alerts[prayerName] = true;
-      notifyListeners();
       await prefs.setBool(prayerName, alerts[prayerName]!);
+      notifyListeners();
+      backgroundTask();
     } else {
       alerts[prayerName] = false;
       notifyListeners();
       await prefs.setBool(prayerName, alerts[prayerName]!);
+      backgroundTask();
     }
   }
 
