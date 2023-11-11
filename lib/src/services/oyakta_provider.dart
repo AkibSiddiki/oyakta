@@ -6,7 +6,6 @@ import 'package:oyakta/src/services/coordinate_to_address.dart';
 import 'package:oyakta/src/services/get_oyakta.dart';
 import 'package:prayers_times/prayers_times.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/services.dart';
 
 class OyaktaProviders extends ChangeNotifier {
   late Position selectedPosition;
