@@ -50,12 +50,10 @@ class _PrayerCardState extends State<PrayerCard> {
                         fontWeight: FontWeight.w300),
                   ),
                   const Gap(4),
-                  if (widget.prayerName.toLowerCase() == widget.currentPrayer
-                      //&&
-                      // (widget.s.day == DateTime.now().day &&
-                      //     widget.s.month == DateTime.now().month &&
-                      //     widget.s.year == DateTime.now().year)
-                      )
+                  if (widget.prayerName.toLowerCase() == widget.currentPrayer &&
+                      (widget.s.day == DateTime.now().day &&
+                          widget.s.month == DateTime.now().month &&
+                          widget.s.year == DateTime.now().year))
                     const Icon(
                       Icons.lens,
                       color: Color.fromARGB(255, 22, 165, 72),
