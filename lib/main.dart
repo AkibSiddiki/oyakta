@@ -1,11 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:oyakta/src/screens/home.dart';
 import 'package:oyakta/src/screens/splash_screen.dart';
+import 'package:oyakta/src/services/background_task.dart';
 import 'package:oyakta/src/services/oyakta_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:workmanager/workmanager.dart';
 
-void main() {
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) {
+    backgroundTask();
+    // print('>>>>>>>>>>>>>>>>>>>>$task');
+    return Future.value(true);
+  });
+}
+
+int hourtoDelay() {
+  DateTime now = DateTime.now();
+  DateTime targetTime = DateTime(now.year, now.month, now.day, 1, 0);
+
+  if (targetTime.isBefore(now)) {
+    targetTime = targetTime.add(const Duration(days: 1));
+  }
+
+  int hoursLeft = targetTime.difference(now).inHours;
+  return hoursLeft;
+}
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  await Workmanager().registerPeriodicTask("task_id", "backgroundTask",
+      frequency: const Duration(hours: 24),
+      initialDelay: Duration(hours: hourtoDelay()));
   runApp(const MyApp());
 }
 
