@@ -16,24 +16,26 @@ void callbackDispatcher() {
   });
 }
 
-int hourtoDelay() {
-  DateTime now = DateTime.now();
-  DateTime targetTime = DateTime(now.year, now.month, now.day, 1, 0);
+// int hourtoDelay() {
+//   DateTime now = DateTime.now();
+//   DateTime targetTime = DateTime(now.year, now.month, now.day, 1, 0);
 
-  if (targetTime.isBefore(now)) {
-    targetTime = targetTime.add(const Duration(days: 1));
-  }
+//   if (targetTime.isBefore(now)) {
+//     targetTime = targetTime.add(const Duration(days: 1));
+//   }
 
-  int hoursLeft = targetTime.difference(now).inHours;
-  return hoursLeft;
-}
+//   int hoursLeft = targetTime.difference(now).inHours;
+//   return hoursLeft;
+// }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-  await Workmanager().registerPeriodicTask("task_id", "backgroundTask",
-      frequency: const Duration(hours: 24),
-      initialDelay: Duration(hours: hourtoDelay()));
+  await Workmanager().registerPeriodicTask(
+    "task_id",
+    "backgroundTask",
+    frequency: const Duration(hours: 1),
+  );
   runApp(const MyApp());
 }
 

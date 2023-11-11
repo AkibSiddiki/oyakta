@@ -76,6 +76,25 @@ class _HomeState extends State<Home> {
                       ],
                     ),
                   ),
+                  bottomNavigationBar: BottomNavigationBar(
+                    backgroundColor: const Color.fromARGB(255, 1, 26, 52),
+                    selectedItemColor: Colors.orange,
+                    unselectedItemColor: Colors.white,
+                    items: const <BottomNavigationBarItem>[
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.home_rounded),
+                        label: 'Home',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.compass_calibration_rounded),
+                        label: 'Qibla',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.settings_rounded),
+                        label: 'Settings',
+                      ),
+                    ],
+                  ),
                   body: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),

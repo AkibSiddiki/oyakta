@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 import 'package:oyakta/src/services/background_task.dart';
 import 'package:oyakta/src/services/coordinate_to_address.dart';
 import 'package:oyakta/src/services/get_oyakta.dart';
@@ -8,10 +8,9 @@ import 'package:prayers_times/prayers_times.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OyaktaProviders extends ChangeNotifier {
-  late Position selectedPosition;
+  late LocationData selectedPosition;
   late double latitude;
   late double longitude;
-  late Placemark selectedPlacemark;
   late String locality;
   late PrayerTimes prayerTimesOfSelectedLocation;
   late List<DateTime> prayerTimes;
@@ -69,55 +68,79 @@ class OyaktaProviders extends ChangeNotifier {
 
   Future<void> getCurrentLocation() async {
     try {
-      bool serviceEnabled;
-      LocationPermission permission;
+      // bool serviceEnabled;
+      // LocationPermission permission;
 
-      permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
+      // permission = await Geolocator.checkPermission();
+      // if (permission == LocationPermission.denied) {
+      //   permission = await Geolocator.requestPermission();
+      //   if (permission == LocationPermission.denied) {
+      //     reqComplete = true;
+      //     notifyListeners();
+      //     throw Exception('Location permissions are denied');
+      //   }
+      // }
+
+      // if (permission == LocationPermission.deniedForever) {
+      //   reqComplete = true;
+      //   notifyListeners();
+      //   throw Exception(
+      //       'Location permissions are permanently denied, we cannot request permissions.');
+      // }
+
+      // serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+      // if (!serviceEnabled) {
+      //   reqComplete = true;
+      //   notifyListeners();
+      //   Geolocator.openLocationSettings();
+      //   throw Exception('Location services are disabled.');
+      // }
+
+      // selectedPosition = await Geolocator.getCurrentPosition(
+      //     desiredAccuracy: LocationAccuracy.low);
+
+      Location location = Location();
+
+      bool serviceEnabled;
+      PermissionStatus permissionGranted;
+
+      serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) {
+          reqComplete = true;
+          notifyListeners();
+          throw Exception('Location services are disabled.');
+        }
+      }
+
+      permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) {
           reqComplete = true;
           notifyListeners();
           throw Exception('Location permissions are denied');
         }
       }
+      selectedPosition = await location.getLocation();
 
-      if (permission == LocationPermission.deniedForever) {
-        reqComplete = true;
-        notifyListeners();
-        throw Exception(
-            'Location permissions are permanently denied, we cannot request permissions.');
-      }
-
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
-      if (!serviceEnabled) {
-        reqComplete = true;
-        notifyListeners();
-        // Geolocator.openLocationSettings();
-        throw Exception('Location services are disabled.');
-      }
-
-      selectedPosition = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.low);
       notifyListeners();
-      // print(selectedPosition);
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setDouble('selectedPositionLat', selectedPosition.latitude);
-      await prefs.setDouble('selectedPositionLong', selectedPosition.longitude);
+      await prefs.setDouble('selectedPositionLat', selectedPosition.latitude!);
+      await prefs.setDouble(
+          'selectedPositionLong', selectedPosition.longitude!);
 
-      latitude = selectedPosition.latitude;
-      longitude = selectedPosition.longitude;
+      latitude = selectedPosition.latitude!;
+      longitude = selectedPosition.longitude!;
       notifyListeners();
 
-      selectedPlacemark = await getAddress(latitude, longitude);
-      locality = selectedPlacemark.locality!;
-      await prefs.setString('locality', selectedPlacemark.locality as String);
+      locality = (await getAddress(latitude, longitude)) ?? 'N/A';
+      await prefs.setString('locality', locality);
       notifyListeners();
 
-      Future.delayed(const Duration(seconds: 2), () async {
-        await getOyakta();
-      });
+      await getOyakta();
     } catch (e) {
       throw Exception(e);
     }
