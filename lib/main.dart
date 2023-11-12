@@ -19,8 +19,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
   await Workmanager().registerPeriodicTask("task_id", "backgroundTask",
-      frequency: const Duration(hours: 12),
-      constraints: Constraints(networkType: NetworkType.connected));
+      frequency: const Duration(hours: 12));
   runApp(const MyApp());
 }
 
