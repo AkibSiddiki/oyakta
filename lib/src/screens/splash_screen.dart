@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:oyakta/src/services/oyakta_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:location/location.dart';
+// import 'package:location/location.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -26,26 +26,26 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void initProvider() async {
-    Location location = Location();
+    // Location location = Location();
 
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
+    // bool serviceEnabled;
+    // PermissionStatus permissionGranted;
 
-    serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) {
-        SystemNavigator.pop();
-      }
-    }
+    // serviceEnabled = await location.serviceEnabled();
+    // if (!serviceEnabled) {
+    //   serviceEnabled = await location.requestService();
+    //   if (!serviceEnabled) {
+    //     SystemNavigator.pop();
+    //   }
+    // }
 
-    permissionGranted = await location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        SystemNavigator.pop();
-      }
-    }
+    // permissionGranted = await location.hasPermission();
+    // if (permissionGranted == PermissionStatus.denied) {
+    //   permissionGranted = await location.requestPermission();
+    //   if (permissionGranted != PermissionStatus.granted) {
+    //     SystemNavigator.pop();
+    //   }
+    // }
 
     final oyaktaProviders =
         Provider.of<OyaktaProviders>(context, listen: false);

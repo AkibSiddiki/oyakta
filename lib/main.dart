@@ -11,31 +11,16 @@ import 'package:workmanager/workmanager.dart';
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) {
     backgroundTask();
-    // print('>>>>>>>>>>>>>>>>>>>>$task');
     return Future.value(true);
   });
 }
 
-// int hourtoDelay() {
-//   DateTime now = DateTime.now();
-//   DateTime targetTime = DateTime(now.year, now.month, now.day, 1, 0);
-
-//   if (targetTime.isBefore(now)) {
-//     targetTime = targetTime.add(const Duration(days: 1));
-//   }
-
-//   int hoursLeft = targetTime.difference(now).inHours;
-//   return hoursLeft;
-// }
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-  await Workmanager().registerPeriodicTask(
-    "task_id",
-    "backgroundTask",
-    frequency: const Duration(hours: 1),
-  );
+  await Workmanager().registerPeriodicTask("task_id", "backgroundTask",
+      frequency: const Duration(hours: 12),
+      constraints: Constraints(networkType: NetworkType.connected));
   runApp(const MyApp());
 }
 
