@@ -124,6 +124,7 @@ class OyaktaProviders extends ChangeNotifier {
           throw Exception('Location permissions are denied');
         }
       }
+      await location.changeSettings(accuracy: LocationAccuracy.low);
       selectedPosition = await location.getLocation();
 
       notifyListeners();
