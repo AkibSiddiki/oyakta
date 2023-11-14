@@ -80,6 +80,12 @@ class _HomeState extends State<Home> {
                     backgroundColor: const Color.fromARGB(255, 1, 26, 52),
                     selectedItemColor: Colors.orange,
                     unselectedItemColor: Colors.white,
+                    currentIndex: 0,
+                    onTap: (value) {
+                      if (value == 1) {
+                        Navigator.popAndPushNamed(context, '/qibla');
+                      }
+                    },
                     items: const <BottomNavigationBarItem>[
                       BottomNavigationBarItem(
                         icon: Icon(Icons.home_rounded),

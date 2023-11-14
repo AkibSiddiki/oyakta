@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_compass/flutter_compass.dart';
 // import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:oyakta/src/services/background_task.dart';
@@ -15,6 +18,8 @@ class OyaktaProviders extends ChangeNotifier {
   late PrayerTimes prayerTimesOfSelectedLocation;
   late List<DateTime> prayerTimes;
   late DateTime today = DateTime.now();
+  double compassDir = 0.0;
+  double qiblaDir = 0.0;
   bool reqComplete = false;
 
   Map<String, bool> alerts = {
@@ -27,6 +32,7 @@ class OyaktaProviders extends ChangeNotifier {
 
   Future<void> initOyakta() async {
     await initAlert();
+    getQiblaDirection();
     final prefs = await SharedPreferences.getInstance();
     final String? selectLocality = prefs.getString('locality');
     final double? selectedPositionLat = prefs.getDouble('selectedPositionLat');
@@ -178,6 +184,21 @@ class OyaktaProviders extends ChangeNotifier {
     alerts['asr'] = (prefs.getBool('asr')) ?? false;
     alerts['maghrib'] = (prefs.getBool('maghrib')) ?? false;
     alerts['isha'] = (prefs.getBool('isha')) ?? false;
+    notifyListeners();
+  }
+
+  Stream<void> getCompassDirection() async* {
+    final CompassEvent tmp = await FlutterCompass.events!.first;
+    compassDir = tmp.heading!;
+    notifyListeners();
+    // ignore: avoid_print
+    print(compassDir);
+    await Future.delayed(
+        const Duration(milliseconds: 300)); // Wait for one second
+  }
+
+  Future<void> getQiblaDirection() async {
+    qiblaDir = Qibla.qibla(Coordinates(latitude, longitude));
     notifyListeners();
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:oyakta/src/screens/home.dart';
+import 'package:oyakta/src/screens/qiblq.dart';
 import 'package:oyakta/src/screens/splash_screen.dart';
 import 'package:oyakta/src/services/background_task.dart';
 import 'package:oyakta/src/services/oyakta_provider.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => const SplashScreen(),
           '/home': (context) => const Home(),
+          '/qibla': (context) => const Qibla(),
         },
       ),
     );
