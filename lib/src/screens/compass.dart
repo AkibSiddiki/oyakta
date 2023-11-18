@@ -3,14 +3,14 @@ import 'package:gap/gap.dart';
 import 'package:oyakta/src/services/oyakta_provider.dart';
 import 'package:provider/provider.dart';
 
-class Qibla extends StatefulWidget {
-  const Qibla({super.key});
+class Compass extends StatefulWidget {
+  const Compass({super.key});
 
   @override
-  State<Qibla> createState() => _QiblaState();
+  State<Compass> createState() => _CompassState();
 }
 
-class _QiblaState extends State<Qibla> {
+class _CompassState extends State<Compass> {
   Stream<DateTime> clockStream =
       Stream.periodic(const Duration(seconds: 1), (count) {
     return DateTime.now();

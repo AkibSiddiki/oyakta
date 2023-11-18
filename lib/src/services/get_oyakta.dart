@@ -2,7 +2,6 @@ import 'package:prayers_times/prayers_times.dart';
 
 Future<PrayerTimes> getAdhan(double lat, double long, DateTime today) async {
   Coordinates coordinates = Coordinates(lat, long);
-
   PrayerCalculationParameters params = PrayerCalculationMethod.ummAlQura();
   params.madhab = PrayerMadhab.hanafi;
 

@@ -132,5 +132,5 @@ class _PrayerCardState extends State<PrayerCard> {
 
 // Widget PrayerCard(
 //     context, DateTime s, DateTime e, String prayerName, String currentPrayer) {
-  
+
 // }

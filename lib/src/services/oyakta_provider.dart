@@ -32,7 +32,6 @@ class OyaktaProviders extends ChangeNotifier {
 
   Future<void> initOyakta() async {
     await initAlert();
-    getQiblaDirection();
     final prefs = await SharedPreferences.getInstance();
     final String? selectLocality = prefs.getString('locality');
     final double? selectedPositionLat = prefs.getDouble('selectedPositionLat');
@@ -43,12 +42,14 @@ class OyaktaProviders extends ChangeNotifier {
         selectLocality == null) {
       await getCurrentLocation();
       await getOyakta();
+      await getQiblaDirection();
     } else {
       latitude = selectedPositionLat;
       longitude = selectedPositionLong;
       locality = selectLocality;
       notifyListeners();
       await getOyakta();
+      await getQiblaDirection();
     }
   }
 
@@ -130,7 +131,7 @@ class OyaktaProviders extends ChangeNotifier {
           throw Exception('Location permissions are denied');
         }
       }
-      await location.changeSettings(accuracy: LocationAccuracy.low);
+      await location.changeSettings(accuracy: LocationAccuracy.balanced);
       selectedPosition = await location.getLocation();
 
       notifyListeners();
