@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
-// import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:oyakta/src/services/background_task.dart';
 import 'package:oyakta/src/services/coordinate_to_address.dart';
 import 'package:oyakta/src/services/get_oyakta.dart';
 import 'package:prayers_times/prayers_times.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart' as permission_h;
 
 class OyaktaProviders extends ChangeNotifier {
   late LocationData selectedPosition;
@@ -21,6 +21,7 @@ class OyaktaProviders extends ChangeNotifier {
   double compassDir = 0.0;
   double qiblaDir = 0.0;
   bool reqComplete = false;
+  bool notifiAllow = false;
 
   Map<String, bool> alerts = {
     'fajr': false,
@@ -75,38 +76,6 @@ class OyaktaProviders extends ChangeNotifier {
 
   Future<void> getCurrentLocation() async {
     try {
-      // bool serviceEnabled;
-      // LocationPermission permission;
-
-      // permission = await Geolocator.checkPermission();
-      // if (permission == LocationPermission.denied) {
-      //   permission = await Geolocator.requestPermission();
-      //   if (permission == LocationPermission.denied) {
-      //     reqComplete = true;
-      //     notifyListeners();
-      //     throw Exception('Location permissions are denied');
-      //   }
-      // }
-
-      // if (permission == LocationPermission.deniedForever) {
-      //   reqComplete = true;
-      //   notifyListeners();
-      //   throw Exception(
-      //       'Location permissions are permanently denied, we cannot request permissions.');
-      // }
-
-      // serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
-      // if (!serviceEnabled) {
-      //   reqComplete = true;
-      //   notifyListeners();
-      //   Geolocator.openLocationSettings();
-      //   throw Exception('Location services are disabled.');
-      // }
-
-      // selectedPosition = await Geolocator.getCurrentPosition(
-      //     desiredAccuracy: LocationAccuracy.low);
-
       Location location = Location();
 
       bool serviceEnabled;
@@ -169,12 +138,12 @@ class OyaktaProviders extends ChangeNotifier {
       alerts[prayerName] = true;
       await prefs.setBool(prayerName, alerts[prayerName]!);
       notifyListeners();
-      backgroundTask();
+      // backgroundTask();
     } else {
       alerts[prayerName] = false;
       notifyListeners();
       await prefs.setBool(prayerName, alerts[prayerName]!);
-      backgroundTask();
+      // backgroundTask();
     }
   }
 
@@ -186,6 +155,58 @@ class OyaktaProviders extends ChangeNotifier {
     alerts['maghrib'] = (prefs.getBool('maghrib')) ?? false;
     alerts['isha'] = (prefs.getBool('isha')) ?? false;
     notifyListeners();
+  }
+
+  Future<void> requestNotif() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Request notification permission
+    permission_h.PermissionStatus status =
+        await permission_h.Permission.notification.request();
+    if (status.isGranted) {
+      notifiAllow = true;
+      alerts = {
+        'fajr': true,
+        'dhuhr': true,
+        'asr': true,
+        'maghrib': true,
+        'isha': true,
+      };
+      prefs.setBool('fajr', true);
+      prefs.setBool('dhuhr', true);
+      prefs.setBool('asr', true);
+      prefs.setBool('maghrib', true);
+      prefs.setBool('isha', true);
+    } else if (status.isDenied) {
+      notifiAllow = false;
+      alerts = {
+        'fajr': false,
+        'dhuhr': false,
+        'asr': false,
+        'maghrib': false,
+        'isha': false,
+      };
+      prefs.setBool('fajr', false);
+      prefs.setBool('dhuhr', false);
+      prefs.setBool('asr', false);
+      prefs.setBool('maghrib', false);
+      prefs.setBool('isha', false);
+    } else if (status.isPermanentlyDenied) {
+      notifiAllow = false;
+      alerts = {
+        'fajr': false,
+        'dhuhr': false,
+        'asr': false,
+        'maghrib': false,
+        'isha': false,
+      };
+      prefs.setBool('fajr', false);
+      prefs.setBool('dhuhr', false);
+      prefs.setBool('asr', false);
+      prefs.setBool('maghrib', false);
+      prefs.setBool('isha', false);
+      // permission_h.openAppSettings();
+    }
   }
 
   Stream<void> getCompassDirection() async* {

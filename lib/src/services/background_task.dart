@@ -42,5 +42,7 @@ Future<void> backgroundTask() async {
       notif.schaduleNotification(
           'Isha', 'Prayer Time', prayertime.ishaStartTime!, 5);
     }
+    notif.schaduleNotification(
+        'Test', 'Test Time', DateTime.now().add(const Duration(minutes: 1)), 6);
   }
 }
