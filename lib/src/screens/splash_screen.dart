@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
-// import 'package:oyakta/src/services/background_task.dart';
 import 'package:oyakta/src/services/oyakta_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +29,6 @@ class _SplashScreenState extends State<SplashScreen>
         Provider.of<OyaktaProviders>(context, listen: false);
     await oyaktaProviders.initOyakta();
     await oyaktaProviders.requestNotif();
-    // backgroundTask();
     Navigator.pushReplacementNamed(context, '/home');
   }
 

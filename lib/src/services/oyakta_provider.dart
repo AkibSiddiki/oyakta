@@ -43,6 +43,7 @@ class OyaktaProviders extends ChangeNotifier {
         selectLocality == null) {
       await getCurrentLocation();
       await getOyakta();
+      await backgroundTask();
       await getQiblaDirection();
     } else {
       latitude = selectedPositionLat;
@@ -50,6 +51,7 @@ class OyaktaProviders extends ChangeNotifier {
       locality = selectLocality;
       notifyListeners();
       await getOyakta();
+      await backgroundTask();
       await getQiblaDirection();
     }
   }
@@ -138,12 +140,12 @@ class OyaktaProviders extends ChangeNotifier {
       alerts[prayerName] = true;
       await prefs.setBool(prayerName, alerts[prayerName]!);
       notifyListeners();
-      // backgroundTask();
+      await backgroundTask();
     } else {
       alerts[prayerName] = false;
       notifyListeners();
       await prefs.setBool(prayerName, alerts[prayerName]!);
-      // backgroundTask();
+      await backgroundTask();
     }
   }
 
@@ -165,18 +167,6 @@ class OyaktaProviders extends ChangeNotifier {
         await permission_h.Permission.notification.request();
     if (status.isGranted) {
       notifiAllow = true;
-      alerts = {
-        'fajr': true,
-        'dhuhr': true,
-        'asr': true,
-        'maghrib': true,
-        'isha': true,
-      };
-      prefs.setBool('fajr', true);
-      prefs.setBool('dhuhr', true);
-      prefs.setBool('asr', true);
-      prefs.setBool('maghrib', true);
-      prefs.setBool('isha', true);
     } else if (status.isDenied) {
       notifiAllow = false;
       alerts = {
